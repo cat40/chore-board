@@ -35,8 +35,6 @@ uint8_t num_overdue_chores = 0;
 
 static void setup(void);
 static void blink(void);
-static chore_status_t check_chore_status(rtc_reading_t time, chore_t chore);
-static int64_t rtc_reading_to_epoch(rtc_reading_t rtc_reading);
 
 int main(void)
 {
@@ -76,77 +74,6 @@ static void setup(void)
     setup_digital_output(FUNSIES_LED_PIN, 1);
 
     buttons.init();
-}
-
-static chore_status_t check_chore_status(rtc_reading_t time, chore_t chore)
-{
-    if (chore.chore_type == PERIODIC)
-    {
-        int64_t current_epoch = rtc_reading_to_epoch(time);
-        int64_t time_since_last_done = current_epoch - chore.time_last_done;
-        if(time_since_last_done/60 > chore.deadline)
-        {
-            return OVERDUE;
-        }
-        else if(time_since_last_done/60 >= (chore.deadline-chore.warning_length_mintues))
-        {
-            return WARNING;
-        }
-        return GOOD;
-    }
-    else if (chore.chore_type == DAY_OF_WEEK)
-    {
-        if (time.weekday == (chore.deadline & 0xff))
-        {
-            uint32_t time_mintues = time.minute + 60*time.hour;
-            if (time_mintues > (chore.deadline>>8))
-            {
-                return OVERDUE;
-            }
-            else if (time_mintues >= ((chore.deadline>>8) - chore.warning_length_mintues))
-            {
-                return WARNING;
-            }
-            return GOOD;
-        }
-    }
-    else if (chore.chore_type == DAY_OF_MONTH)
-    {
-        if (time.day == chore.deadline&0xff)
-        {
-            uint32_t time_mintues = time.minute + 60*time.hour;
-            if (time_mintues > (chore.deadline>>8))
-            {
-                return OVERDUE;
-            }
-            else if (time_mintues >= ((chore.deadline>>8) - chore.warning_length_mintues))
-            {
-                return WARNING;
-            }
-            return GOOD;
-        }
-    }
-}
-
-static int64_t rtc_reading_to_epoch(rtc_reading_t rtc_reading)
-{
-    const static uint16_t days_passed_by_month_normal[] = { 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365 };
-    const static uint16_t days_passed_by_month_leap[] = { 0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366 };
-    int64_t time = 0;
-    time += ((rtc_reading.year-1970)*365 + rtc_reading.year/4)*24*60*60;  // might be off by a few days
-    if (rtc_reading.year % 4 == 0)
-    {
-        time += (days_passed_by_month_leap[rtc_reading.month])*24*60*60; // todo implement days per month
-    }
-    else
-    {
-        time += (days_passed_by_month_normal[rtc_reading.month])*24*60*60; // todo implement days per month
-    }
-    time += rtc_reading.day*24*60*60;
-    time += rtc_reading.hour*60*60;
-    time += rtc_reading.minute*60;
-    time += rtc_reading.second;
-    return time;
 }
 
 static void blink(void)

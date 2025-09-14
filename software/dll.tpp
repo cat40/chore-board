@@ -35,11 +35,13 @@ template <typename T> void DoubleLinkedList<T>::put_item_at_index(uint32_t index
 {
     if (index == 0)
     {
-
+        DoubleLinkedListNode<T> new_node(item, NULL, head);
+        head->previous = &new_node;
+        this->head = &new_node;
     }
     else if (index < 0)
     {
-
+        // currently an invalid case. May implement backwards indexing in Python style
     }
     else
     {

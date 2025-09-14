@@ -12,7 +12,7 @@ template <typename T> class DoubleLinkedListNode
         DoubleLinkedListNode<T>* next;
 };
 
-
+// todo implement proper iterator
 template <typename T> class DoubleLinkedList
 {
     public:
