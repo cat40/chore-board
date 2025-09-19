@@ -26,6 +26,11 @@ typedef enum {
 } chore_type_t;
 
 typedef struct {
+    uint8_t rgb_port;
+    uint8_t index;
+} rgb_pixel_t;
+
+typedef struct {
     char str_id[ID_LENGTH];
     uint8_t port;
     uint32_t deadline;  // interpretation changes depending on chore type. See comment below
@@ -33,6 +38,7 @@ typedef struct {
     chore_type_t chore_type;
     int64_t time_last_done;  // unix epoch
     uint32_t color;
+    rgb_pixel_t rgb_stuff;
 } chore_t;
 /* Deadline interpretation by chore type:
     * Day of month: LSB is month day (1-28). Don't put 29, 30, or 31 if you value your sanity... The rest is the time of day in mintues
@@ -49,6 +55,7 @@ class Chores
         chore_t* get_chore_by_port(uint8_t port);
         void update_chore_status(rtc_reading_t reading, uint8_t max_overdue_chores);  // updates chore status but does not change the shown colors
         void set_chore_priority(uint8_t port, uint8_t priority); // 0 is lowest. Will insert the chore at this level, pushing the ones after down. 
+        uint8_t get_chores_on_rgb(uint8_t rgb_num, chore_t** chore_list); // returns the number of chores on it
         // DoubleLinkedList<chore_t*> chore_list;
         chore_t* chores[NUM_CHORES];
         static chore_status_t check_chore_status(rtc_reading_t time, chore_t* chore);

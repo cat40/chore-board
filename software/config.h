@@ -23,7 +23,8 @@
 #define EEPROM_ADDRESS      (0xa0 >> 1)
 
 // rtc stuff
-#define I2C i2c0
+#define I2C             i2c1
+#define I2C_CLOCK_SPEED (400*1000)
 
 // pin assignments
 #define FUNSIES_LED_PIN 4
@@ -42,7 +43,7 @@ const static uint MATRIX_COLUMNS[] = {15, 16, 17, 21, 22, 23, 24};
 #define UART_TX_PIN 0
 #define UART_RX_PIN 1
 #define UART_ID uart0
-#define UART_BAUD_RATE 460800
+#define UART_BAUD_RATE 115200
 
 #define I2C_SDA         2
 #define I2C_SCL         3

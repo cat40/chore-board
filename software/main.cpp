@@ -29,12 +29,19 @@ Settings settings(&eeprom);
 Pcf8523 rtc(I2C);
 rtc_reading_t rtc_reading;
 
-chore_t chores[NUM_CHORES];
-uint32_t pixel_colors[NUM_CHORES];
-uint8_t num_overdue_chores = 0;
+uint32_t rgb1_colors[NUM_CHORES];
+uint32_t rgb2_colors[NUM_CHORES];
+uint32_t rgb3_colors[NUM_CHORES];
+chore_t* rgb1_chores[NUM_CHORES];
+chore_t* rgb2_chores[NUM_CHORES];
+chore_t* rgb3_chores[NUM_CHORES];
+uint8_t rgb1_num, rgb2_num, rgb3_num;
+
+Chores chores;
 
 static void setup(void);
 static void blink(void);
+static void update_rgb_port(Adafruit_NeoPixel port, uint8_t count, chore_t** chores, uint32_t* colors);
 
 int main(void)
 {
@@ -43,10 +50,17 @@ int main(void)
     busy_wait_ms(STARTUP_WAIT);
 
     printf("Starting program chore-board, hash: %s\n", COMMIT_HASH);
+    printf("Data structure sizes:\n");
+    printf("Chore struct: %d\n", sizeof(chore_t));
+    printf("Chores object: %d\n", sizeof(chores));
+    printf("Settings packet:%d \n", sizeof(settings_packet_t));
 
     setup();
 
+    printf("Done setup\n");
+
     rgb1.updateLength(30);
+    
 
     uint32_t hue = 0;
 
@@ -62,9 +76,23 @@ int main(void)
     //     printf("color: %u\n", hue);
     // }
 
+    uint8_t led_status = 0;
     while(1)
     {
+        gpio_put(FUNSIES_LED_PIN, led_status);
+        led_status ^= 1;
         rtc.get_reading(&rtc_reading);
+        printf("RTC reading: %04d-%02d-%02d %02d:%02d:%02d\n", rtc_reading.year, rtc_reading.month, rtc_reading.day, rtc_reading.hour, rtc_reading.minute, rtc_reading.second);
+        chores.update_chore_status(rtc_reading, settings.packet->max_overdue_chores);
+        rgb1_num = chores.get_chores_on_rgb(1, rgb1_chores);
+        rgb2_num = chores.get_chores_on_rgb(2, rgb2_chores);
+        rgb3_num = chores.get_chores_on_rgb(3, rgb3_chores);
+        update_rgb_port(rgb1, rgb1_num, rgb1_chores, rgb1_colors);
+        update_rgb_port(rgb2, rgb2_num, rgb2_chores, rgb2_colors);
+        update_rgb_port(rgb3, rgb3_num, rgb3_chores, rgb3_colors);
+        // rgb1.show();
+        // rgb2.show();
+        // rgb3.show();
         busy_wait_ms(5000);  // give the rtc time to actually be an rtc
     }
 }
@@ -73,7 +101,15 @@ static void setup(void)
 {
     setup_digital_output(FUNSIES_LED_PIN, 1);
 
-    buttons.init();
+    i2c_init(I2C, I2C_CLOCK_SPEED);
+    // gpio_init(I2C_SDA);
+    // gpio_init(I2C_SCL);
+    gpio_set_function(I2C_SCL, GPIO_FUNC_I2C);
+    gpio_set_function(I2C_SDA, GPIO_FUNC_I2C);
+    gpio_pull_up(I2C_SCL);
+    gpio_pull_up(I2C_SDA);
+    // buttons.init();
+    rtc.init(true);
 }
 
 static void blink(void)
@@ -82,4 +118,18 @@ static void blink(void)
     gpio_put(FUNSIES_LED_PIN, 1);
     busy_wait_ms(1000);
     gpio_put(FUNSIES_LED_PIN, 0);
+}
+
+static void update_rgb_port(Adafruit_NeoPixel port, uint8_t count, chore_t** chores, uint32_t* colors)
+{
+    port.updateLength(count);
+    for (uint8_t i=0; i<count; i++)
+    {
+        chore_t* chore = chores[i];
+        colors[chore->rgb_stuff.index] = chore->color;
+    }
+    for (uint8_t i=0; i<count; i++)
+    {
+        port.setPixelColor(i, colors[i]);
+    }
 }

@@ -35,6 +35,7 @@ void Chores::update_chore_status(rtc_reading_t rtc_reading, uint8_t max_overdue_
     {
         chore = chores[i];
         chore_status_t chore_status = check_chore_status(rtc_reading, chore);
+        // todo update these to use colors defined in the settings
         switch (chore_status)
         {
             case GOOD:
@@ -115,17 +116,22 @@ void Chores::reorder_chores(uint8_t ports[NUM_CHORES])
     {
         chores[i] = temp_chores[i];
     }
-    // std::array<chore_t, NUM_CHORES> new_chores;
-    // for (uint8_t i_port=0; i_port<NUM_CHORES; i_port++)
-    // {
-    //     for (uint8_t j_chore=0; j_chore<NUM_CHORES; j_chore++)
-    //     {
-    //         if (ports[i_port] == this->chores[j_chore].port)
-    //         {
-    //             new_chores[i_port] = this->chores[j_chore];
-    //             break;
-    //         }
-    //     }
-    // }
-    // this->chore_list = new_chores;
+}
+
+void Chores::set_chore_priority(uint8_t port, uint8_t priority) // 0 is lowest. Will insert the chore at this level, pushing the ones after down. 
+{
+    // todo implement this
+}
+
+uint8_t Chores::get_chores_on_rgb(uint8_t rgb_num, chore_t** chore_list)
+{
+    uint8_t j = 0;
+    for (uint8_t i=0; i<NUM_CHORES; i++)
+    {
+        if (chores[i]->rgb_stuff.rgb_port == rgb_num)
+        {
+            chore_list[j++] = chores[i];
+        }
+    }
+    return j;
 }
