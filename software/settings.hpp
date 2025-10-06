@@ -28,7 +28,7 @@ class Settings
         Settings(Eeprom* eeprom);
         void write(void);
         void read(void);
-        void get_chore(uint8_t port, chore_t* chore);
+        chore_t* get_chore(uint8_t port);
         void set_chore(uint8_t port, chore_t* chore);
         settings_packet_t* packet;
     private:

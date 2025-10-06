@@ -24,9 +24,9 @@ void Settings::read(void)
     memcpy(&packet, i2c_buffer, sizeof(packet));
 }
 
-void Settings::get_chore(uint8_t port, chore_t* chore)
+chore_t* Settings::get_chore(uint8_t port)
 {
-    chore = packet->chores.get_chore_by_port(port);
+    return packet->chores.get_chore_by_port(port);
 }
 
 void Settings::set_chore(uint8_t port, chore_t* chore)

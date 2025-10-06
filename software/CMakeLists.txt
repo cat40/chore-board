@@ -5,6 +5,7 @@ set(PICO_BOARD chore_board_hw)
 
 # add_compile_options(-fanalyzer -fstack-usage)
 add_compile_options(-fstack-usage)
+# add_compile_options(-fsanitize=address -g3 -Wall -Wextra)
 
 include(pico_sdk_import.cmake)
 

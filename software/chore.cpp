@@ -47,6 +47,9 @@ void Chores::update_chore_status(rtc_reading_t rtc_reading, uint8_t max_overdue_
             case OVERDUE:
                 chore->color = num_overdue++ < max_overdue_chores ? OVERDUE_COLOR : OVERDUE_LOW_PRIORITY_COLOR;
                 break;
+            case INVALID:
+            default:
+                break;
         }
     }
 }
@@ -84,7 +87,7 @@ chore_status_t Chores::check_chore_status(rtc_reading_t time, chore_t* chore)
     }
     else if (chore->chore_type == DAY_OF_MONTH)
     {
-        if (time.day == chore->deadline&0xff)
+        if (time.day == (chore->deadline&0xff))
         {
             uint32_t time_mintues = time.minute + 60*time.hour;
             if (time_mintues > (chore->deadline>>8))
