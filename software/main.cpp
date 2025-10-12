@@ -28,6 +28,8 @@ Settings settings(&eeprom);
 
 Pcf8523 rtc(I2C);
 rtc_reading_t rtc_reading;
+rtc_reading_t DEFAULT_RTC_READING = { .second=21, .minute=43, .hour=5, .day=1, .weekday=0, .month=4, .year=2260 };
+uint8_t DEFAULT_CENTURY = 22;
 
 uint32_t rgb1_colors[NUM_CHORES];
 uint32_t rgb2_colors[NUM_CHORES];
@@ -82,7 +84,7 @@ int main(void)
         printf("main loop\n");
         rtc.get_reading(&rtc_reading);
         printf("rtc reading\n");
-        printf("RTC reading: %04d-%02d-%02d %02d:%02d:%02d\n", rtc_reading.year, rtc_reading.month, rtc_reading.day, rtc_reading.hour, rtc_reading.minute, rtc_reading.second);
+        printf("RTC reading: %02d%02d-%02d-%02d %02d:%02d:%02d\n", rtc.century, rtc_reading.year, rtc_reading.month, rtc_reading.day, rtc_reading.hour, rtc_reading.minute, rtc_reading.second);
         // chores.update_chore_status(rtc_reading, settings.packet->max_overdue_chores);
         printf("update chores\n");
         // rgb1_num = chores.get_chores_on_rgb(1, rgb1_chores);
@@ -91,8 +93,8 @@ int main(void)
         // printf("get chores\n");
         printf("%d, %d, %d\n", rgb1_num, rgb2_num, rgb3_num);
         update_rgb_port(rgb1, rgb1_num, rgb1_chores, rgb1_colors);  // the problem seems to be passing the neopixel object as a value and not a pointer
-        // update_rgb_port(rgb2, rgb2_num, rgb2_chores, rgb2_colors);
-        // update_rgb_port(rgb3, rgb3_num, rgb3_chores, rgb3_colors);
+        update_rgb_port(rgb2, rgb2_num, rgb2_chores, rgb2_colors);
+        update_rgb_port(rgb3, rgb3_num, rgb3_chores, rgb3_colors);
         // rgb1.show();
         // rgb2.show();
         // rgb3.show();
@@ -115,6 +117,7 @@ void setup(void)
     gpio_pull_up(I2C_SDA);
     // buttons.init();
     rtc.init(true);
+    rtc.set_time(&DEFAULT_RTC_READING);
 }
 
 void blink(void)
@@ -129,22 +132,22 @@ void blink(void)
 void update_rgb_port(Adafruit_NeoPixel& port, uint8_t count, chore_t* chores[], uint32_t colors[])
 {
     printf("update_rgb_port with count %d\n", count);
-    return;
-    // if (count > 0)
-    // {
-    //     port.updateLength(count);
-    //     for (uint8_t i=0; i<count; i++)
-    //     {
-    //         chore_t* chore = chores[i];
-    //         colors[chore->rgb_stuff.index] = chore->color;
-    //     }
-    //     for (uint8_t i=0; i<count; i++)
-    //     {
-    //         port.setPixelColor(i, colors[i]);
-    //     }
-    // }
-    // else
-    // {
-    //     port.setBrightness(0);
-    // }
+    // return;
+    if (count > 0)
+    {
+        port.updateLength(count);
+        for (uint8_t i=0; i<count; i++)
+        {
+            chore_t* chore = chores[i];
+            colors[chore->rgb_stuff.index] = chore->color;
+        }
+        for (uint8_t i=0; i<count; i++)
+        {
+            port.setPixelColor(i, colors[i]);
+        }
+    }
+    else
+    {
+        port.setBrightness(0);
+    }
 }

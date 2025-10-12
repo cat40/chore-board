@@ -4,6 +4,7 @@
 #include "pico/stdlib.h"
 #include "hardware/uart.h"
 
+
 // #include "data_structures.h"
 
 #define STARTUP_WAIT        3000
@@ -25,7 +26,6 @@
 // rtc stuff
 #define I2C             i2c1
 #define I2C_CLOCK_SPEED (400*1000)
-
 // pin assignments
 #define FUNSIES_LED_PIN 4
 
