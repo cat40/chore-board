@@ -35,6 +35,7 @@ add_executable(choreboard
   main.cpp
   settings.cpp
   chore.cpp
+  command.c
 )
 
 add_compile_options(-fstack-usage)
@@ -44,6 +45,7 @@ target_link_libraries( choreboard
     pico_rand
     hardware_i2c
     hardware_adc
+    hardware_uart
     pico_neopixel
     kitten-utilities
     kitten-matrix
@@ -54,7 +56,7 @@ target_link_libraries( choreboard
 target_link_options(choreboard PUBLIC "LINKER:--print-memory-usage,-Map=memory.map,--gc-sections")
 
 pico_enable_stdio_usb(choreboard 1)
-pico_enable_stdio_uart(choreboard 1)
+pico_enable_stdio_uart(choreboard 0)
 
 pico_add_extra_outputs(choreboard)
 

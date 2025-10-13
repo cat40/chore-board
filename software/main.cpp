@@ -1,10 +1,12 @@
 #include "pico/stdlib.h"
+#include "pico/stdio.h"
 
 extern "C"
 {
 #include "config.h"
 #include "utilities.h"
 #include "data_structures.h"
+#include "command.h"
 }
 
 #include <stdio.h>
@@ -16,6 +18,7 @@ extern "C"
 #include "eeprom.hpp"
 #include "pcf8523.hpp"
 #include "chore.hpp"
+#include "uart.hpp"
 
 Adafruit_NeoPixel rgb1(DEFAULT_NUM_PIXELS, RGB_1_PIN, PIXEL_PARAMETERS);
 Adafruit_NeoPixel rgb2(DEFAULT_NUM_PIXELS, RGB_2_PIN, PIXEL_PARAMETERS);
@@ -47,7 +50,7 @@ void update_rgb_port(Adafruit_NeoPixel& port, uint8_t count, chore_t* chores[], 
 
 int main(void)
 {
-    stdio_init_all();
+    stdio_usb_init();
 
     busy_wait_ms(STARTUP_WAIT);
 
@@ -79,18 +82,20 @@ int main(void)
     // }
 
     uint8_t led_status = 0;
+    busy_wait_ms(5000);
     while(1)
     {
         printf("main loop\n");
+        // poll_command();
         rtc.get_reading(&rtc_reading);
         printf("rtc reading\n");
         printf("RTC reading: %02d%02d-%02d-%02d %02d:%02d:%02d\n", rtc.century, rtc_reading.year, rtc_reading.month, rtc_reading.day, rtc_reading.hour, rtc_reading.minute, rtc_reading.second);
         // chores.update_chore_status(rtc_reading, settings.packet->max_overdue_chores);
-        printf("update chores\n");
+        // printf("update chores\n");
         // rgb1_num = chores.get_chores_on_rgb(1, rgb1_chores);
         // rgb2_num = chores.get_chores_on_rgb(2, rgb2_chores);
         // rgb3_num = chores.get_chores_on_rgb(3, rgb3_chores);
-        // printf("get chores\n");
+        printf("get chores\n");
         printf("%d, %d, %d\n", rgb1_num, rgb2_num, rgb3_num);
         update_rgb_port(rgb1, rgb1_num, rgb1_chores, rgb1_colors);  // the problem seems to be passing the neopixel object as a value and not a pointer
         update_rgb_port(rgb2, rgb2_num, rgb2_chores, rgb2_colors);
@@ -98,7 +103,7 @@ int main(void)
         // rgb1.show();
         // rgb2.show();
         // rgb3.show();
-        // busy_wait_ms(5000);  // give the rtc time to actually be an rtc
+        busy_wait_ms(5000);  // give the rtc time to actually be an rtc
         printf("update port finished\n");
         blink();
     }
@@ -118,6 +123,11 @@ void setup(void)
     // buttons.init();
     rtc.init(true);
     rtc.set_time(&DEFAULT_RTC_READING);
+    rtc.get_reading(&rtc_reading);
+    printf("rtc reading\n");
+    printf("RTC reading: %02d%02d-%02d-%02d %02d:%02d:%02d\n", rtc.century, rtc_reading.year, rtc_reading.month, rtc_reading.day, rtc_reading.hour, rtc_reading.minute, rtc_reading.second);
+    // chores.update_chore_status(rtc_reading, settings.packet->max_overdue_chores);
+
 }
 
 void blink(void)
@@ -132,7 +142,6 @@ void blink(void)
 void update_rgb_port(Adafruit_NeoPixel& port, uint8_t count, chore_t* chores[], uint32_t colors[])
 {
     printf("update_rgb_port with count %d\n", count);
-    // return;
     if (count > 0)
     {
         port.updateLength(count);
