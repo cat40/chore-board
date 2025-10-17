@@ -55,15 +55,16 @@ void Chores::update_chore_status(rtc_reading_t rtc_reading, uint8_t max_overdue_
 }
 chore_status_t Chores::check_chore_status(rtc_reading_t time, chore_t* chore)
 {
+    uint32_t time_seconds = time.second + 60*time.minute + 60*60*time.hour;
     if (chore->chore_type == PERIODIC)
     {
         int64_t current_epoch = rtc_reading_to_epoch(time);
         int64_t time_since_last_done = current_epoch - chore->time_last_done;
-        if(time_since_last_done/60 > chore->deadline)
+        if(time_since_last_done > chore->deadline.epoch_delta)
         {
             return OVERDUE;
         }
-        else if(time_since_last_done/60 >= (chore->deadline-chore->warning_length_mintues))
+        else if(time_since_last_done >= (chore->deadline.epoch_delta-chore->warning_length_seconds))
         {
             return WARNING;
         }
@@ -71,30 +72,49 @@ chore_status_t Chores::check_chore_status(rtc_reading_t time, chore_t* chore)
     }
     else if (chore->chore_type == DAY_OF_WEEK)
     {
-        if (time.weekday == (chore->deadline & 0xff))
+        if (time.weekday == chore->deadline.day_of_week_or_month)
         {
-            uint32_t time_mintues = time.minute + 60*time.hour;
-            if (time_mintues > (chore->deadline>>8))
+            if (time_seconds > chore->deadline.time_seconds)
             {
                 return OVERDUE;
             }
-            else if (time_mintues >= ((chore->deadline>>8) - chore->warning_length_mintues))
+            else if (time_seconds >= (chore->deadline.time_seconds- chore->warning_length_seconds))
             {
                 return WARNING;
             }
             return GOOD;
         }
     }
+    else if (chore->chore_type == EVERY_TWO_WEEKS || chore->chore_type == EVERY_FOUR_WEEKS)
+    {
+        uint8_t modulus = chore->chore_type == EVERY_TWO_WEEKS ? 2 : 4;
+        if (time.weekday == chore->deadline.day_of_week_or_month)
+        {
+            chore->deadline.current_week_index += 1;
+            chore->deadline.current_week_index %= modulus;
+            if (chore->deadline.current_week_index == chore->deadline.week_offset)
+            {
+                if (time_seconds > chore->deadline.time_seconds)
+                {
+                    return OVERDUE;
+                }
+                else if (time_seconds >= (chore->deadline.time_seconds- chore->warning_length_seconds))
+                {
+                    return WARNING;
+                }
+            }
+            return GOOD;
+        }
+    }
     else if (chore->chore_type == DAY_OF_MONTH)
     {
-        if (time.day == (chore->deadline&0xff))
+        if (time.day == chore->deadline.day_of_week_or_month)
         {
-            uint32_t time_mintues = time.minute + 60*time.hour;
-            if (time_mintues > (chore->deadline>>8))
+            if (time_seconds > (chore->deadline.time_seconds))
             {
                 return OVERDUE;
             }
-            else if (time_mintues >= ((chore->deadline>>8) - chore->warning_length_mintues))
+            else if (time_seconds >= ((chore->deadline.time_seconds) - chore->warning_length_seconds))
             {
                 return WARNING;
             }

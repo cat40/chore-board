@@ -22,8 +22,18 @@ typedef enum {
 typedef enum {
     DAY_OF_MONTH,
     DAY_OF_WEEK,
+    EVERY_TWO_WEEKS,
+    EVERY_FOUR_WEEKS,
     PERIODIC
 } chore_type_t;
+
+typedef struct {
+    uint8_t day_of_week_or_month : 5;
+    uint8_t week_offset : 2;  // week 0 is the first week of the month (meaning first occurence of the day of the week)
+    uint8_t current_week_index : 2;
+    uint32_t time_seconds : 17;
+    uint32_t epoch_delta;  // epochs are int64 but used uint32 to save space because there is no sane reason to have a negative interval
+} chore_time_t;
 
 typedef struct {
     uint8_t rgb_port;
@@ -33,19 +43,13 @@ typedef struct {
 typedef struct {
     char str_id[ID_LENGTH];
     uint8_t port;
-    uint32_t deadline;  // interpretation changes depending on chore type. See comment below
-    uint32_t warning_length_mintues;
+    chore_time_t deadline;
+    uint32_t warning_length_seconds;
     chore_type_t chore_type;
     int64_t time_last_done;  // unix epoch
     uint32_t color;
     rgb_pixel_t rgb_stuff;
 } chore_t;
-/* Deadline interpretation by chore type:
-    * Day of month: LSB is month day (1-28). Don't put 29, 30, or 31 if you value your sanity... The rest is the time of day in mintues
-    * Day of week: Week day (0-6). Sunday is 0.
-    * Periodic: Interval in mintues. 
-    * todo add a setting to let the first two set what time of day to trigger
-*/
 
 class Chores
 {
