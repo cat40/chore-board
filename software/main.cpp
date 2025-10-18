@@ -91,18 +91,18 @@ int main(void)
         printf("rtc reading\n");
         printf("RTC reading: %02d%02d-%02d-%02d %02d:%02d:%02d\n", rtc.century, rtc_reading.year, rtc_reading.month, rtc_reading.day, rtc_reading.hour, rtc_reading.minute, rtc_reading.second);
         // chores.update_chore_status(rtc_reading, settings.packet->max_overdue_chores);
-        // printf("update chores\n");
-        // rgb1_num = chores.get_chores_on_rgb(1, rgb1_chores);
-        // rgb2_num = chores.get_chores_on_rgb(2, rgb2_chores);
-        // rgb3_num = chores.get_chores_on_rgb(3, rgb3_chores);
+        printf("update chores\n");
+        rgb1_num = chores.get_chores_on_rgb(1, rgb1_chores);
+        rgb2_num = chores.get_chores_on_rgb(2, rgb2_chores);
+        rgb3_num = chores.get_chores_on_rgb(3, rgb3_chores);
         printf("get chores\n");
         printf("%d, %d, %d\n", rgb1_num, rgb2_num, rgb3_num);
         update_rgb_port(rgb1, rgb1_num, rgb1_chores, rgb1_colors);  // the problem seems to be passing the neopixel object as a value and not a pointer
         update_rgb_port(rgb2, rgb2_num, rgb2_chores, rgb2_colors);
         update_rgb_port(rgb3, rgb3_num, rgb3_chores, rgb3_colors);
-        // rgb1.show();
-        // rgb2.show();
-        // rgb3.show();
+        rgb1.show();
+        rgb2.show();
+        rgb3.show();
         busy_wait_ms(5000);  // give the rtc time to actually be an rtc
         printf("update port finished\n");
         blink();
