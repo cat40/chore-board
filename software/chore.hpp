@@ -20,6 +20,7 @@ typedef enum {
 } chore_status_t;
 
 typedef enum {
+    DAILY,  // todo handle this case
     DAY_OF_MONTH,
     DAY_OF_WEEK,
     EVERY_TWO_WEEKS,
@@ -28,10 +29,12 @@ typedef enum {
 } chore_type_t;
 
 typedef struct {
+    // for daily/weekly/etc chores
     uint8_t day_of_week_or_month : 5;
     uint8_t week_offset : 2;  // week 0 is the first week of the month (meaning first occurence of the day of the week)
     uint8_t current_week_index : 2;
     uint32_t time_seconds : 17;
+    // for periodic chores
     uint32_t epoch_delta;  // epochs are int64 but used uint32 to save space because there is no sane reason to have a negative interval
 } chore_time_t;
 
@@ -42,6 +45,7 @@ typedef struct {
 
 typedef struct {
     char str_id[ID_LENGTH];
+    char responsible_party[PARTY_LENGTH];
     uint8_t port;
     chore_time_t deadline;
     uint32_t warning_length_seconds;

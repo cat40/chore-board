@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.13)
+# Note! Minimum GCC/G++ version is 10.4. I think. Anyway it works on 14.3.1; just update if you have issues related to the defaults.hpp file
 
 set(PICO_BOARD_HEADER_DIRS ${CMAKE_SOURCE_DIR}) 
 set(PICO_BOARD chore_board_hw)
@@ -9,7 +10,7 @@ add_compile_options(-fstack-usage)
 
 include(pico_sdk_import.cmake)
 
-project(myproject_test C CXX ASM)
+project(choreboard_project C CXX ASM)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
 
@@ -36,6 +37,7 @@ add_executable(choreboard
   settings.cpp
   chore.cpp
   command.c
+  defaults.cpp
 )
 
 add_compile_options(-fstack-usage)

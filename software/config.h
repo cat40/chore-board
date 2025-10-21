@@ -59,6 +59,7 @@ const static uint MATRIX_COLUMNS[] = {15, 16, 17, 21, 22, 23, 24};
 #define BUTTON              29
 
 // don't touch these
-#define ID_LENGTH   16
+#define ID_LENGTH       32
+#define PARTY_LENGTH    12
 
 #endif
