@@ -16,3 +16,6 @@
 [submodule "software/pi-pico-adafruit-neopixels"]
 	path = software/pi-pico-adafruit-neopixels
 	url = https://github.com/martinkooij/pi-pico-adafruit-neopixels.git
+[submodule "mechanical/scad-common"]
+	path = mechanical/scad-common
+	url = git@github.com:cat40/scad-common.git
