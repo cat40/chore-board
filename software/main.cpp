@@ -19,6 +19,7 @@ extern "C"
 #include "pcf8523.hpp"
 #include "chore.hpp"
 #include "uart.hpp"
+#include "defaults.hpp"
 
 Adafruit_NeoPixel rgb1(DEFAULT_NUM_PIXELS, RGB_1_PIN, PIXEL_PARAMETERS);
 Adafruit_NeoPixel rgb2(DEFAULT_NUM_PIXELS, RGB_2_PIN, PIXEL_PARAMETERS);
@@ -59,8 +60,11 @@ int main(void)
     printf("Chore struct: %d\n", sizeof(chore_t));
     printf("Chores object: %d\n", sizeof(chores));
     printf("Settings packet:%d \n", sizeof(settings_packet_t));
+    printf("default chores:%d\n", sizeof(default_chores));
 
     setup();
+
+    load_defaults(settings);
 
     printf("Done setup\n");
 
