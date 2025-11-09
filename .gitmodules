@@ -19,3 +19,6 @@
 [submodule "mechanical/scad-common"]
 	path = mechanical/scad-common
 	url = git@github.com:cat40/scad-common.git
+[submodule "mechanical/BOSL2"]
+	path = mechanical/BOSL2
+	url = https://github.com/BelfrySCAD/BOSL2.git
