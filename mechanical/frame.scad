@@ -6,10 +6,10 @@ $fn = $preview ? 32 : 128;
 
 led_spacing = 1000/30;
 row_count = 16;
-paper_slot_thickness = 0.4;  // 65lb cardstock is ~10pt=254um
+paper_slot_thickness = 0.4*3;  // 65lb cardstock is ~10pt=254um
 // text_height_width_ratio = 2; // letters are twice as tall, on average, as they are wide. Ish. By font
 chore_label_length = 8.5*25.4; // cut from 8.5x11 paper
-bezel_thickness = 10; // this is TOTAL bezel thickness
+bezel_thickness = 15; // this is TOTAL bezel thickness
 bezel_structural_thickness = 2.4;
 bezel_depth = 4+paper_slot_thickness;
 bezel_triangle_height = 2;
@@ -29,6 +29,7 @@ total_bezel = 2*bezel_thickness + bezel_structural_thickness;
 chore_label_height = led_spacing-bezel_thickness;
 echo("chore label height: ", chore_label_height);
 paper_slot_depth = (bezel_thickness-bezel_structural_thickness)/2;
+echo("paper slot depth: ", paper_slot_depth);
 center_bar_height = bezel_depth + bezel_triangle_height;
 
 // geometry
@@ -79,6 +80,8 @@ module center_bar(num_rows, right=false, left=false)
 
 module center_bar_segment(right=false, left=false)
 {
+    // todo try offsetting it so the holes are at the top, then the bezel slot, then the bottom
+    // that way it will be more modular. And use similar bezel things for panel
     difference()
     {
         cube([led_spacing, center_bar_width, center_bar_height]);
@@ -117,6 +120,6 @@ module mirror_copy(vector)
 }
 
 //center_bar_segment(right=true, left=true);
-center_bar(row_count, right=true, left=true);
+center_bar(6, right=true, left=true);
 //bezel_locking_tab();
 //bezel();
