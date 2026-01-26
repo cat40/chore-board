@@ -119,7 +119,7 @@ module mirror_copy(vector)
         children();
 }
 
-//center_bar_segment(right=true, left=true);
-center_bar(6, right=true, left=true);
+center_bar_segment(right=true, left=true);
+//center_bar(6, right=true, left=true);
 //bezel_locking_tab();
 //bezel();
