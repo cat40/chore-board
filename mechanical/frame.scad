@@ -82,6 +82,13 @@ module center_bar_segment(right=false, left=false)
 {
     // todo try offsetting it so the holes are at the top, then the bezel slot, then the bottom
     // that way it will be more modular. And use similar bezel things for panel
+    center_bar_lock_distance = 15;
+    translate([led_spacing, center_bar_width/2-center_bar_lock_distance/2, center_bar_height/2])
+        rotate([0, 90, 0])
+            bezel_locking_tab();
+    translate([led_spacing, center_bar_width/2+center_bar_lock_distance/2, center_bar_height/2])
+        rotate([0, 90, 0])
+            bezel_locking_tab();
     difference()
     {
         cube([led_spacing, center_bar_width, center_bar_height]);
@@ -91,6 +98,13 @@ module center_bar_segment(right=false, left=false)
         // button
         translate([led_spacing/2, 3*center_bar_width/4, 0])
             cylinder(h=center_bar_height, d=button_diameter);
+        translate([0, center_bar_width/2-center_bar_lock_distance/2, center_bar_height/2])
+            rotate([0, 90, 0])
+                #bezel_locking_tab(negative=true);
+        translate([0, center_bar_width/2+center_bar_lock_distance/2, center_bar_height/2])
+            rotate([0, 90, 0])
+                #bezel_locking_tab(negative=true);
+        // locking tabs for bezels
         if (right)
         {
             translate([0, center_bar_width, bezel_lock_bar_length/2+bezel_lock_offset])
@@ -119,7 +133,7 @@ module mirror_copy(vector)
         children();
 }
 
-center_bar_segment(right=true, left=true);
-//center_bar(6, right=true, left=true);
+// center_bar_segment(right=true, left=true);
+center_bar(6, right=true, left=true);
 //bezel_locking_tab();
 //bezel();
