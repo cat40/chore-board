@@ -85,3 +85,6 @@ fp-info-cache
 
 software/build/*
 *.vscode
+
+# stls (for now)
+mechanical/stl/
