@@ -6,7 +6,7 @@ $fn = $preview ? 32 : 128;
 
 led_spacing = 1000/30;
 row_count = 16;
-paper_slot_thickness = 0.4*3;  // 65lb cardstock is ~10pt=254um
+paper_slot_thickness = 0.4*6;  // 65lb cardstock is ~10pt=254um
 // text_height_width_ratio = 2; // letters are twice as tall, on average, as they are wide. Ish. By font
 chore_label_length = 8.5*25.4; // cut from 8.5x11 paper
 bezel_thickness = 15; // this is TOTAL bezel thickness
